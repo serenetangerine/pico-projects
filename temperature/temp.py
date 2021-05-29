@@ -39,9 +39,17 @@ while True:
     oled.text('%s F' % str(tempF), 0, 30)
     
     # update the display to display text
-    oled.show()
+    #oled.show()
     
     print('Current temp: %s C (%s F)' % (str(tempC), str(tempF)))
 
-    sleep(15)
+    # display progress bar for refresh
+    oled.text('|', 0, 45)
+    oled.text('|', 80, 45)
+    for i in range(15):
+        oled.text('|', (5 * (i + 1)), 45)
+        oled.show()
+        i += 1
+        sleep(1)
+    #sleep(15)
 
