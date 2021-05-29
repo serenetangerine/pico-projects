@@ -44,12 +44,10 @@ while True:
     print('Current temp: %s C (%s F)' % (str(tempC), str(tempF)))
 
     # display progress bar for refresh
-    oled.text('|', 0, 45)
-    oled.text('|', 80, 45)
+    oled.text('|', 75, 45)
     for i in range(15):
-        oled.text('|', (5 * (i + 1)), 45)
+        oled.text('|', (5 * i), 45)
         oled.show()
         i += 1
-        sleep(1)
-    #sleep(15)
+        sleep(4)
 
