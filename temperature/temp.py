@@ -49,5 +49,5 @@ while True:
         oled.text('|', (5 * i), 45)
         oled.show()
         i += 1
-        sleep(4)
+        sleep(1)
 
