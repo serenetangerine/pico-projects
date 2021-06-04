@@ -12,7 +12,7 @@ oled = SSD1306_I2C(width, height, i2c) # oled controller
 oled.write_cmd(0xc0)
 
 # ADC channel 2 for input (can be microphone, or any analogue input)
-adc = machine.ADC(2)
+adc = machine.ADC(1)
 
 while True:
     # clear the oled screen
@@ -22,6 +22,7 @@ while True:
     for i in range(width):
         # read adc and get 16-bit data point
         adc_pt = adc.read_u16()
+        print(adc_pt)
 
         # convert to oled pixels
         plot_pt = (adc_pt / ((2 ** 16) - 1)) * (height - 1)
