@@ -48,8 +48,10 @@ while True:
 
     if enterButton.value():
         oled.fill(0)
-        oled.text('Running %s' % scripts[selection - 1])
+        oled.text('Running %s...' % scripts[selection - 1])
         oled.show()
+        sleep(2)
+        # run script
 
     sleep(0.5)
         

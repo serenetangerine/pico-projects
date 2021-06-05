@@ -22,7 +22,12 @@ def temperatureLoop():
         temp = temp * to_volts
     
         # convert volts to celsius and celsius to fahrenheit
-        tempC = 27 - (temp - 0.706) / 0.001721
+        #
+        # default volts to celsius conversion
+        # tempC = 27 - (temp - 0.706) / 0.001721
+        # 
+        # calibrate temperature
+        tempC = 34 - (temp - 0.706) / 0.001721
         tempF = tempC * 9 / 5 + 32
     
     
@@ -34,8 +39,6 @@ def temperatureLoop():
         oled.text('%s C' % str(tempC), 0, 15)
         oled.text('%s F' % str(tempF), 0, 30)
         
-        # update the display to display text
-        #oled.show()
         
         print('Current temp: %s C (%s F)' % (str(tempC), str(tempF)))
     
