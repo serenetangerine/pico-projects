@@ -1,6 +1,5 @@
 from machine import ADC, I2C, Pin
 from ssd1306 import SSD1306_I2C
-#from temp import temperatureLoop
 from time import sleep
 
 
@@ -22,7 +21,10 @@ height = 64
 i2c = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
 oled = SSD1306_I2C(width, height, i2c)
 
-scripts = ['temp.py', 'osc.py', 'heart.py']
+# initialize analogue input
+adc = ADC(1)
+
+scripts = ['temp.py', 'osc.py']
 
 
 def drawScreen(selection):
@@ -38,23 +40,27 @@ selection = 1
 drawScreen(selection)
 while True:
     if upButton.value():
-        print('up button pressed!')
         if selection > 1:
             selection -= 1
             drawScreen(selection)
-        sleep(0.5)
+        sleep(0.1)
 
     if downButton.value():
-        print('down button pressed!')
         if selection < len(scripts):
             selection += 1
             drawScreen(selection)
-        sleep(0.5)
+        sleep(0.1)
 
     if enterButton.value():
-        print('enter button pressed!')
         oled.fill(0)
-        oled.text('Running %s...' % scripts[selection])
+        oled.text('Running %s' % scripts[selection - 1], 0, 0)
         oled.show()
-        sleep(2)
+        sleep(1)
+
         # run script
+        if scripts[selection - 1] == 'temp.py':
+            from temp import temperatureLoop
+            temperatureLoop()
+        if scripts[selection - 1] == 'osc.py':
+            from osc import oscilliscope
+            oscilliscope()
