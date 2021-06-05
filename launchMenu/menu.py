@@ -8,6 +8,9 @@ led = Pin(25, Pin.OUT)
 led.on()
 
 
+sleep(2)
+
+
 # initialize buttons
 upButton = Pin(14, Pin.IN, Pin.PULL_DOWN)
 downButton = Pin(15, Pin.IN, Pin.PULL_DOWN)
