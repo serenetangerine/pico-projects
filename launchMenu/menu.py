@@ -1,4 +1,4 @@
-from machine import ADC, I2C, Pin
+from machine import I2C, Pin
 from ssd1306 import SSD1306_I2C
 from time import sleep
 
@@ -24,8 +24,6 @@ height = 64
 i2c = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
 oled = SSD1306_I2C(width, height, i2c)
 
-# initialize analogue input
-adc = ADC(1)
 
 scripts = ['temp.py', 'osc.py']
 
