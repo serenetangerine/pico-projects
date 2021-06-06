@@ -1,4 +1,4 @@
-from machine import ADC, I2C, Pin
+from machine import I2C, Pin
 from ssd1306 import SSD1306_I2C
 from time import sleep
 
@@ -10,6 +10,7 @@ led.on()
 
 def temperatureLoop():
     # initialize ADC 4 for temperature reading
+    from machine import ADC
     temp_sensor = ADC(4)
 
     # start loop to read temperature and write to screen
