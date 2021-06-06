@@ -1,12 +1,17 @@
 # takes an analogue input and graphs on oled screen
 
 
-from machine import ADC, Pin, I2C
+from machine import Pin, I2C
 from ssd1306 import SSD1306_I2C
 
 
 def oscilliscope():
     ## assumes the screen has already been initialized
+
+    # initialize ADC for analogue input
+    from machine import ADC
+    # ADC channel 1 for input (can be microphone or any analogue input)
+    adc = ADC(1)
 
     # flip display to place 0,0 at lower-left corner
     oled.write_cmd(0xc0)
@@ -38,8 +43,5 @@ height = 64
 
 i2c = I2C(0, scl=Pin(9), sda=Pin(8), freq=200000)
 oled = SSD1306_I2C(width, height, i2c)
-
-# ADC channel 1 for input (can be microphone, or any analogue input)
-adc = ADC(1)
 
 oscilliscope()
