@@ -67,5 +67,6 @@ oled = SSD1306_I2C(width, height, i2c)
 tomo = Tomo()
 while True:
     #gc.collect()
-    #print(gc.mem_free())
+    #mem = 1 - (gc.mem_free() / 270336)
+    #print(str(mem))
     tomo.walk()
