@@ -21,6 +21,11 @@ class Tomo:
             t.readline()
             t.readline()
             self.tomol = bytearray(t.read())
+        with open('burger.pbm', 'rb') as b:
+            b.readline()
+            b.readline()
+            b.readline()
+            self.burger = bytearray(b.read())
         self.dir = 1
         self.x = 64
         self.y = 32
