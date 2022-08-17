@@ -38,11 +38,27 @@ class Tomo:
         self.egg2 = load_sprite('egg2.pbm', 32)
         self.egg3 = load_sprite('egg3.pbm', 32)
         
-        # set default values
-        self.dir = 1
-        self.x = 64
+        # set default position
+        self.x = 0 
         self.y = 32
+
+        self.spawn()
+
+    def spawn(self):
         self.health = 8
+        self.dir = 1
+        for i in range(9):
+            if i % 2 == 0:
+                self.sprite = self.egg1
+            else:
+                self.sprite = self.egg2
+            self.render()
+        for i in range(7):
+            if i % 2 == 0:
+                self.sprite = self.egg3
+            else:
+                self.sprite = self.egg1
+            self.render()
         self.sprite = self.tomoR
 
     def walk(self):
@@ -61,8 +77,6 @@ class Tomo:
             self.y = 32 
         if randint(0, 9) == 0:
             self.health = self.health - 1
-            if self.health < 0:
-                self.health = 8
             #print(self.health)
         self.render()
 
@@ -84,6 +98,7 @@ class Tomo:
         sleep(0.5)
 
 
+
 # turn on LED so we know the pico is powered on
 led = Pin(25, Pin.OUT)
 led.on()
@@ -98,5 +113,12 @@ oled = SSD1306_I2C(width, height, i2c)
 # initialize Tomo and start loop
 tomo = Tomo()
 while True:
-    debug()
-    tomo.walk()
+    #debug()
+    if tomo.health > 0:
+        tomo.walk()
+    else:
+        tomo.sprite = tomo.dead
+        tomo.render()
+        sleep(3)
+        tomo.spawn()
+        
