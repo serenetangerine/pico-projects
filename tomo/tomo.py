@@ -32,7 +32,11 @@ class Tomo:
         self.heartHalf = load_sprite('heart-half.pbm', 16)
         self.heartEmpty = load_sprite('heart-empty.pbm', 16)
 
-        self.burger = load_sprite('burger.pbm', 32)
+        self.dead = load_sprite('dead.pbm', 32)
+
+        self.egg1 = load_sprite('egg1.pbm', 32)
+        self.egg2 = load_sprite('egg2.pbm', 32)
+        self.egg3 = load_sprite('egg3.pbm', 32)
         
         # set default values
         self.dir = 1
@@ -55,9 +59,11 @@ class Tomo:
             self.y = 30
         else:
             self.y = 32 
-        if randint(0, 5) == 0:
+        if randint(0, 9) == 0:
             self.health = self.health - 1
-            print(self.health)
+            if self.health < 0:
+                self.health = 8
+            #print(self.health)
         self.render()
 
     def render_hearts(self):
@@ -92,5 +98,5 @@ oled = SSD1306_I2C(width, height, i2c)
 # initialize Tomo and start loop
 tomo = Tomo()
 while True:
-    #debug()
+    debug()
     tomo.walk()
