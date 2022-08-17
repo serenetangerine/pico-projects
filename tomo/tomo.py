@@ -1,7 +1,6 @@
 from machine import ADC, Pin, I2C
 from ssd1306 import SSD1306_I2C
-from framebuf import FrameBuffer
-import framebuf
+from framebuf import FrameBuffer, MONO_HLSB
 
 from random import randint
 from time import sleep
@@ -11,10 +10,10 @@ from time import sleep
 def load_sprite(file, size):
     with open(file, 'rb') as f:
         # skip over metadata
-        for i in range(0, 3):
+        for i in range(3):
             f.readline()
         data = bytearray(f.read())
-        return FrameBuffer(data, size, size, framebuf.MONO_HLSB)
+        return FrameBuffer(data, size, size, MONO_HLSB)
 
 def debug():
     import gc
@@ -56,11 +55,20 @@ class Tomo:
             self.y = 30
         else:
             self.y = 32 
+        if randint(0, 5) == 0:
+            self.health = self.health - 1
+            print(self.health)
         self.render()
 
     def render_hearts(self):
-        for i in range(0, 4):
-            oled.blit(self.heartEmpty, i * 13, 0)
+        for i in range(4):
+            if self.health >= (i + 1) * 2:
+                sprite = self.heartFull
+            elif self.health >= i * 2 and self.health % 2 == 1:
+                sprite = self.heartHalf
+            else:
+                sprite = self.heartEmpty
+            oled.blit(sprite, i * 13, 0)
 
     def render(self):
         oled.fill(0)
@@ -68,6 +76,7 @@ class Tomo:
         oled.blit(self.sprite, self.x, self.y)
         oled.show()
         sleep(0.5)
+
 
 # turn on LED so we know the pico is powered on
 led = Pin(25, Pin.OUT)
@@ -83,5 +92,5 @@ oled = SSD1306_I2C(width, height, i2c)
 # initialize Tomo and start loop
 tomo = Tomo()
 while True:
-    debug()
+    #debug()
     tomo.walk()
