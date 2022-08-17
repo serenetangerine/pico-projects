@@ -1,60 +1,71 @@
 from machine import ADC, Pin, I2C
 from ssd1306 import SSD1306_I2C
+from framebuf import FrameBuffer
 import framebuf
 
 from random import randint
 from time import sleep
 
-import gc
+
+
+def load_sprite(file, size):
+    with open(file, 'rb') as f:
+        # skip over metadata
+        for i in range(0, 3):
+            f.readline()
+        data = bytearray(f.read())
+        return FrameBuffer(data, size, size, framebuf.MONO_HLSB)
+
+def debug():
+    import gc
+    gc.collect()
+    mem = 1 - (gc.mem_free() / 270336)
+    print(str(mem))
 
 
 class Tomo:
     def __init__(self):
         # load sprites
-        with open('tomor.pbm', 'rb') as t:
-            t.readline()
-            t.readline()
-            t.readline()
-            self.tomor = bytearray(t.read())
-        with open('tomol.pbm', 'rb') as t:
-            t.readline()
-            t.readline()
-            t.readline()
-            self.tomol = bytearray(t.read())
-        with open('burger.pbm', 'rb') as b:
-            b.readline()
-            b.readline()
-            b.readline()
-            self.burger = bytearray(b.read())
+        self.tomoR = load_sprite('tomor.pbm', 32)
+        self.tomoL = load_sprite('tomol.pbm', 32)
+        
+        self.heartFull = load_sprite('heart-full.pbm', 16)
+        self.heartHalf = load_sprite('heart-half.pbm', 16)
+        self.heartEmpty = load_sprite('heart-empty.pbm', 16)
+
+        self.burger = load_sprite('burger.pbm', 32)
+        
+        # set default values
         self.dir = 1
         self.x = 64
         self.y = 32
-        self.sprite = self.tomor
+        self.health = 8
+        self.sprite = self.tomoR
 
     def walk(self):
         self.dir = randint(0, 1)
         if self.dir == 0:
             if self.x <= 96:
-                self.sprite = self.tomol
+                self.sprite = self.tomoL
                 self.x = self.x + 2
-            else:
-                print('wall')
         else:
             if self.x >= 0:
-                self.sprite = self.tomor
+                self.sprite = self.tomoR
                 self.x = self.x - 2
-            else:
-                print('wall')
         if self.x % 3 == 0:
-            self.y = 32
+            self.y = 30
         else:
-            self.y = 30 
+            self.y = 32 
         self.render()
+
+    def render_hearts(self):
+        for i in range(0, 4):
+            oled.blit(self.heartEmpty, i * 13, 0)
 
     def render(self):
         oled.fill(0)
-        tomo = framebuf.FrameBuffer(self.sprite, 32, 32, framebuf.MONO_HLSB)
-        oled.blit(tomo, self.x, self.y)
+        self.render_hearts()
+        oled.blit(self.sprite, self.x, self.y)
         oled.show()
         sleep(0.5)
 
@@ -69,9 +80,8 @@ height = 64
 i2c = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
 oled = SSD1306_I2C(width, height, i2c)
 
+# initialize Tomo and start loop
 tomo = Tomo()
 while True:
-    #gc.collect()
-    #mem = 1 - (gc.mem_free() / 270336)
-    #print(str(mem))
+    debug()
     tomo.walk()
