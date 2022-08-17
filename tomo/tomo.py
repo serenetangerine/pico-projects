@@ -42,12 +42,12 @@ class Tomo:
         self.x = 0 
         self.y = 32
 
-        self.health = -1
+        self.health = -2
         self.spawn()
 
     def spawn(self):
         self.dir = 1
-        for i in range(9):
+        for i in range(10):
             self.health = self.health + 1
             if i % 2 == 0:
                 self.sprite = self.egg1
