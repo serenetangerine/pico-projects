@@ -47,6 +47,7 @@ class Tomo:
 
     def spawn(self):
         self.dir = 1
+        self.food_spawned = False
         for i in range(9):
             self.health = self.health + 1
             if i % 2 == 0:
@@ -63,7 +64,19 @@ class Tomo:
         self.sprite = self.tomoR
 
     def walk(self):
-        self.dir = randint(0, 1)
+        # food motivation
+        if self.food_spawned:
+            if self.food_x > self.x:
+                self.dir = 0
+                if self.food_x <= self.x + 32:
+                    self.eat()
+            else:
+                self.dir = 1
+                if self.food_x + 16 <= self.x:
+                    self.eat()
+        else:
+            self.dir = randint(0, 1)
+        
         if self.dir == 0:
             if self.x <= 96:
                 self.sprite = self.tomoL
@@ -76,10 +89,27 @@ class Tomo:
             self.y = 30
         else:
             self.y = 32 
-        if randint(0, 9) == 0:
-            self.health = self.health - 1
-            #print(self.health)
+        self.roll_health(9)
+        self.roll_food(19)
         self.render()
+
+    def eat(self):
+        self.food_spawned = False
+        self.health = 8
+
+    def roll_health(self, max):
+        if randint(0, max) == 0:
+            self.health = self.health - 1
+
+    def roll_food(self, max):
+        if not self.food_spawned:
+            if randint(0, max) == 0:
+                self.food_x = randint(0, 112)
+                self.food_spawned = True
+
+    def render_food(self):
+        if self.food_spawned:
+            oled.blit(self.heartFull, self.food_x, 42)
 
     def render_hearts(self):
         for i in range(4):
@@ -95,6 +125,7 @@ class Tomo:
         oled.fill(0)
         self.render_hearts()
         oled.blit(self.sprite, self.x, self.y)
+        self.render_food()
         oled.show()
         sleep(0.5)
 
