@@ -39,7 +39,7 @@ class Tomo:
         self.egg3 = load_sprite('egg3.pbm', 32)
         
         # set default position
-        self.x = 32 
+        self.x = randint(0,96) 
         self.y = 32
 
         self.health = -1
@@ -90,12 +90,15 @@ class Tomo:
         else:
             self.y = 32 
         self.roll_health(9)
-        self.roll_food(9)
+        self.roll_food(8)
         self.render()
 
     def eat(self):
         self.food_spawned = False
-        self.health = self.health + 2
+        if self.health <= 6:
+            self.health = self.health + 2
+        else:
+            self.health = 8
 
     def roll_health(self, max):
         if randint(0, max) == 0:
@@ -105,7 +108,10 @@ class Tomo:
         if not self.food_spawned:
             if randint(0, max) == 0:
                 self.food_x = randint(0, 112)
-                self.food_spawned = True
+                if self.food_x not in range(self.x, self.x + 32):
+                    self.food_spawned = True
+                else:
+                    print('could not spawn food')
 
     def render_food(self):
         if self.food_spawned:
