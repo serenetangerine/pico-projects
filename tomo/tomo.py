@@ -39,7 +39,7 @@ class Tomo:
         self.egg3 = load_sprite('egg3.pbm', 32)
         
         # set default position
-        self.x = 0 
+        self.x = 32 
         self.y = 32
 
         self.health = -1
@@ -72,7 +72,7 @@ class Tomo:
                     self.eat()
             else:
                 self.dir = 1
-                if self.food_x + 16 <= self.x:
+                if self.x - 16 <= self.food_x:
                     self.eat()
         else:
             self.dir = randint(0, 1)
@@ -90,12 +90,12 @@ class Tomo:
         else:
             self.y = 32 
         self.roll_health(9)
-        self.roll_food(19)
+        self.roll_food(9)
         self.render()
 
     def eat(self):
         self.food_spawned = False
-        self.health = 8
+        self.health = self.health + 2
 
     def roll_health(self, max):
         if randint(0, max) == 0:
