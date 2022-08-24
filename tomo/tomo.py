@@ -111,7 +111,7 @@ class Tomo:
         if not self.food_spawned:
             if randint(0, max) == 0:
                 self.food_x = randint(0, 112)
-                if self.food_x not in range(self.x, self.x + 32):
+                if self.food_x not in range(self.x, self.x + 32) and self.food_x + 16 not in range(self.x, self.x + 32):
                     self.food_spawned = True
                 else:
                     print('could not spawn food')
