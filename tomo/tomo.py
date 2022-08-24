@@ -42,6 +42,7 @@ class Tomo:
         self.x = randint(0,96) 
         self.y = 32
 
+        self.high_score = 0
         self.health = -1
         self.spawn()
 
@@ -91,7 +92,7 @@ class Tomo:
         else:
             self.y = 32 
         self.roll_health(15)
-        self.roll_food(8)
+        self.roll_food(12)
         self.render()
 
     def eat(self):
@@ -134,7 +135,9 @@ class Tomo:
         self.render_hearts()
         oled.blit(self.sprite, self.x, self.y)
         self.render_food()
-        oled.text(str(self.score), 0, 5)
+        oled.text(str(self.score), 0, 3)
+        if self.high_score > 0:
+            oled.text(str(self.high_score), 0, 18)
         oled.show()
         sleep(0.5)
 
@@ -159,6 +162,8 @@ while True:
         tomo.walk()
     else:
         tomo.sprite = tomo.dead
+        if tomo.score > tomo.high_score:
+            tomo.high_score = tomo.score
         tomo.render()
         sleep(3)
         tomo.spawn()
