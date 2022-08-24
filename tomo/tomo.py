@@ -48,6 +48,7 @@ class Tomo:
     def spawn(self):
         self.dir = 1
         self.food_spawned = False
+        self.score = 0
         for i in range(9):
             self.health = self.health + 1
             if i % 2 == 0:
@@ -72,7 +73,7 @@ class Tomo:
                     self.eat()
             else:
                 self.dir = 1
-                if self.x - 16 <= self.food_x:
+                if self.x - 17 <= self.food_x:
                     self.eat()
         else:
             self.dir = randint(0, 1)
@@ -89,12 +90,13 @@ class Tomo:
             self.y = 30
         else:
             self.y = 32 
-        self.roll_health(9)
+        self.roll_health(15)
         self.roll_food(8)
         self.render()
 
     def eat(self):
         self.food_spawned = False
+        self.score = self.score + 10
         if self.health <= 6:
             self.health = self.health + 2
         else:
@@ -125,21 +127,22 @@ class Tomo:
                 sprite = self.heartHalf
             else:
                 sprite = self.heartEmpty
-            oled.blit(sprite, i * 13, 0)
+            oled.blit(sprite, 64 + (i * 13), 0)
 
     def render(self):
         oled.fill(0)
         self.render_hearts()
         oled.blit(self.sprite, self.x, self.y)
         self.render_food()
+        oled.text(str(self.score), 0, 5)
         oled.show()
         sleep(0.5)
 
 
 
 # turn on LED so we know the pico is powered on
-led = Pin(25, Pin.OUT)
-led.on()
+#led = Pin(25, Pin.OUT)
+#led.on()
 
 # initialize screen
 width = 128
