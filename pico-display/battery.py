@@ -6,12 +6,15 @@ from pimoroni import RGBLED
 
 
 class Battery:
-    def __init__(self):
+    def __init__(self, tick_rate):
         self.voltage_sensor = ADC(29)
         self.led = RGBLED(6, 7, 8)
 
         self.full_battery = 4.2
-        self.empty_battery = 3.
+        self.empty_battery = 3.9
+
+        self.uptime = 0
+        self.tick_rate = tick_rate
         
         self.tick()
     
@@ -27,8 +30,9 @@ class Battery:
     
     def setLED(self):
         modifier = self.percentage / 100
+
         if self.power_sensor.value() == 1:
-            self.led.set_rgb(int(230 * modifier), 120, 240)
+            self.led.set_rgb(int(170 * modifier), 120, int(180 * modifier))
         else:
             if self.percentage > 80:
                 self.led.set_rgb(42, int(242 * modifier), 180)
@@ -41,10 +45,12 @@ class Battery:
         self.checkCharging()
         self.checkVoltage()
         self.setLED()
+        self.uptime = self.uptime + self.tick_rate
 
 
 def main():
-    battery = Battery()
+    tick_rate = 0.5
+    battery = Battery(tick_rate)
 
     display = PicoGraphics(display=DISPLAY_PICO_DISPLAY, rotate=0)
     display.set_backlight(0.42)
@@ -62,8 +68,12 @@ def main():
         display.text('{:.2f}v'.format(battery.voltage), 15, 10, 240, 3)
         display.text('{:.0f}%'.format(battery.percentage), 15, 30, 240, 3)
 
+        hours = battery.uptime / 3600
+        display.text('{:.3f} hours'.format(hours), 15, 50, 240, 3)
+        display.text('{:.0f}'.format(battery.uptime), 15, 70, 240, 2)
+
         display.update()
-        time.sleep(0.5)
+        time.sleep(tick_rate)
 
 
 
