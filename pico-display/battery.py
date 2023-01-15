@@ -26,15 +26,16 @@ class Battery:
         self.power_sensor = Pin(24, Pin.IN)
     
     def setLED(self):
+        modifier = self.percentage / 100
         if self.power_sensor.value() == 1:
-            self.led.set_rgb(42, 242, 180)
+            self.led.set_rgb(int(230 * modifier), 120, 240)
         else:
             if self.percentage > 80:
-                self.led.set_rgb(0, 255, 0)
+                self.led.set_rgb(42, int(242 * modifier), 180)
             elif self.percentage > 40:
-                self.led.set_rgb(255, 204, 0)
+                self.led.set_rgb(int(255 * modifier), int(204 * modifier), 0)
             else:
-                self.led.set_rgb(255, 0, 0)
+                self.led.set_rgb(int(255 * modifier), 0, 0)
     
     def tick(self):
         self.checkCharging()
@@ -46,7 +47,7 @@ def main():
     battery = Battery()
 
     display = PicoGraphics(display=DISPLAY_PICO_DISPLAY, rotate=0)
-    display.set_backlight(0.8)
+    display.set_backlight(0.42)
 
     BLACK = display.create_pen(0, 0, 0)
     SEA = display.create_pen(42, 242, 180)
