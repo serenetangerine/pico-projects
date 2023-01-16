@@ -34,9 +34,9 @@ class Battery:
         if self.power_sensor.value() == 1:
             self.led.set_rgb(int(170 * modifier), 120, int(180 * modifier))
         else:
-            if self.percentage > 80:
+            if self.percentage > 73:
                 self.led.set_rgb(42, int(242 * modifier), 180)
-            elif self.percentage > 40:
+            elif self.percentage > 23:
                 self.led.set_rgb(int(255 * modifier), int(204 * modifier), 0)
             else:
                 self.led.set_rgb(int(255 * modifier), 0, 0)
@@ -46,6 +46,11 @@ class Battery:
         self.checkVoltage()
         self.setLED()
         self.uptime = self.uptime + self.tick_rate
+    
+    def daemon(self):
+        while True:
+            self.tick()
+            time.sleep(self.tick_rate)
 
 
 def main():

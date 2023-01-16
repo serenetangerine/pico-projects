@@ -5,17 +5,11 @@ from picographics import PicoGraphics, DISPLAY_PICO_DISPLAY
 from battery import Battery
 import _thread
 
-def batteryDaemon():
-    # create a battery with tick rate of 1
-    tick_rate = 1
-    bat = Battery(tick_rate)
-    while True:
-        bat.tick()
-        time.sleep(tick_rate)
-
 
 def main():
-    led = _thread.start_new_thread(batteryDaemon, ())
+    tick_rate = 1
+    battery = Battery(tick_rate)
+    led = _thread.start_new_thread(battery.daemon, ())
 
     display = PicoGraphics(display=DISPLAY_PICO_DISPLAY, rotate=0)
     #display.set_backlight(0.42)
