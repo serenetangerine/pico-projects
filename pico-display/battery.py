@@ -4,6 +4,8 @@ import time
 from picographics import PicoGraphics, DISPLAY_PICO_DISPLAY
 from pimoroni import RGBLED
 
+import _thread
+
 
 class Battery:
     def __init__(self, tick_rate):
@@ -51,6 +53,9 @@ class Battery:
         while True:
             self.tick()
             time.sleep(self.tick_rate)
+
+    def daemonize(self):
+        self.thread = _thread.start_new_thread(self.daemon, ())
 
 
 def main():
