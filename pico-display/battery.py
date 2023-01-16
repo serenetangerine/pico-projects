@@ -11,7 +11,7 @@ class Battery:
         self.led = RGBLED(6, 7, 8)
 
         self.full_battery = 4.2
-        self.empty_battery = 3.9
+        self.empty_battery = 3.25
 
         self.uptime = 0
         self.tick_rate = tick_rate
@@ -53,7 +53,8 @@ def main():
     battery = Battery(tick_rate)
 
     display = PicoGraphics(display=DISPLAY_PICO_DISPLAY, rotate=0)
-    display.set_backlight(0.42)
+    #display.set_backlight(0.42)
+    display.set_backlight(1)
 
     BLACK = display.create_pen(0, 0, 0)
     SEA = display.create_pen(42, 242, 180)
@@ -65,12 +66,14 @@ def main():
         display.clear()
 
         display.set_pen(SEA)
-        display.text('{:.2f}v'.format(battery.voltage), 15, 10, 240, 3)
-        display.text('{:.0f}%'.format(battery.percentage), 15, 30, 240, 3)
+        display.text('{:.2f}v'.format(battery.voltage), 15, 100, 240, 2)
+        display.text('{:.0f}%'.format(battery.percentage), 150, 100, 240, 2)
 
         hours = battery.uptime / 3600
-        display.text('{:.3f} hours'.format(hours), 15, 50, 240, 3)
-        display.text('{:.0f}'.format(battery.uptime), 15, 70, 240, 2)
+        minutes = battery.uptime / 60
+        display.text('{:.3f} hours'.format(hours), 15, 10, 240, 4)    
+        display.text('{:.2f} minutes'.format(minutes), 15, 40, 240, 3)
+        display.text('{:.0f} seconds'.format(battery.uptime), 15, 60, 240, 2)
 
         display.update()
         time.sleep(tick_rate)
