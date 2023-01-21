@@ -3,13 +3,12 @@ import time
 
 from picographics import PicoGraphics, DISPLAY_PICO_DISPLAY
 from battery import Battery
-import _thread
 
 
 def main():
     tick_rate = 1
     battery = Battery(tick_rate)
-    led = _thread.start_new_thread(battery.daemon, ())
+    battery.daemonize()
 
     display = PicoGraphics(display=DISPLAY_PICO_DISPLAY, rotate=0)
     #display.set_backlight(0.42)
