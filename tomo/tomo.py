@@ -151,7 +151,7 @@ class Tomo:
 width = 128
 height = 64
 
-i2c = I2C(0, scl=Pin(7), sda=Pin(6), freq=100000)
+i2c = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
 oled = SSD1306_I2C(width, height, i2c)
 
 # initialize Tomo and start loop
