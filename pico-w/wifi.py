@@ -28,8 +28,7 @@ class WIFI:
 
         self.connect()
 
-        print('Connected successfully to %s!' % self.SSID)
-        print('IP Address: %s' % str(self.ip))
+
 
 
     def connect(self):
@@ -40,7 +39,7 @@ class WIFI:
 
         # keep trying to connect FOREVER until there is a valid connection
         while not self.wlan.isconnected() and self.wlan.status() >= 0:
-            print('Attempting to connect to %s...' % self.SSID)
+            print('\n\nAttempting to connect to %s...' % self.SSID)
             time.sleep(1)
 
         # ip information
@@ -54,6 +53,9 @@ class WIFI:
         self.channel = self.wlan.config('channel')
         self.essid = self.wlan.config('essid')
         self.txpower = self.wlan.config('txpower')
+
+        print('\nConnected successfully to %s!' % self.SSID)
+        print('IP Address: %s\n\n' % str(self.ip))
 
     def disconnect(self):
         self.wlan.disconnect()
