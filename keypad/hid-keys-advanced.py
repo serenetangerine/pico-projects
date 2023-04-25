@@ -71,14 +71,18 @@ layer_2 =     {7: "pack ",
                10: "five ",
                14: "dozen ",
                5: "liquor ",
-               9: "jugs "}
+               13: "jugs "}
 
 layer_3 =     {6: ConsumerControlCode.VOLUME_DECREMENT,
                7: ConsumerControlCode.SCAN_PREVIOUS_TRACK,
                10: ConsumerControlCode.MUTE,
                11: ConsumerControlCode.PLAY_PAUSE,
                14: ConsumerControlCode.VOLUME_INCREMENT,
-               15: ConsumerControlCode.SCAN_NEXT_TRACK}
+               15: ConsumerControlCode.SCAN_NEXT_TRACK,
+               4: Keycode.LEFT_ARROW,
+               8: Keycode.DOWN_ARROW,
+               9: Keycode.UP_ARROW,
+               12: Keycode.RIGHT_ARROW}
 
 layers =      {1: layer_1,
                2: layer_2,
