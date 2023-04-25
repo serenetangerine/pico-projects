@@ -4,31 +4,22 @@ import secrets
 import time
 import ubinascii
 
-# turn on LED so we know the pi is powered on
-led = machine.Pin("LED", machine.Pin.OUT)
-led.on()
+    # import in wifi config from secrets.py
+    #
+    # format should follow
+    #
+    # SSID = "your ssid"
+    # PASS = "your pass"
 
-# connect to the network
-#
+
+
 
 class WIFI:
     def __init__(self):
-        # import in wifi config from secrets.py
-        #
-        # format should follow
-        #
-        # SSID = "your ssid"
-        # PASS = "your pass"
-
-        # disable powersave mode
-        #self.wlan.config(pm = 0xa11140)
-
         self.SSID = secrets.SSID
         self.PASS = secrets.PASS
 
         self.connect()
-
-
 
 
     def connect(self):
@@ -54,20 +45,28 @@ class WIFI:
         self.essid = self.wlan.config('essid')
         self.txpower = self.wlan.config('txpower')
 
+        # disable powersave mode
+        #self.wlan.config(pm = 0xa11140)
+
         print('\nConnected successfully to %s!' % self.SSID)
         print('IP Address: %s\n\n' % str(self.ip))
+
 
     def disconnect(self):
         self.wlan.disconnect()
 
 
 def main():
-    wifi = WIFI()
+    # turn on LED so we know the pi is powered on
+    led = machine.Pin("LED", machine.Pin.OUT)
+    led.on()
+
+    # connect to wifi (duh)
+    connection = WIFI()
 
 
 if __name__ == '__main__':
-    main()
-    #try:
-    #    main()
-    #except Exception as e:
-    #    print(e)
+    try:
+        main()
+    except Exception as e:
+        print(e)
