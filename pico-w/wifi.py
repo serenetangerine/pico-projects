@@ -11,42 +11,61 @@ led.on()
 # connect to the network
 #
 
+class WIFI:
+    def __init__(self):
+        # import in wifi config from secrets.py
+        #
+        # format should follow
+        #
+        # SSID = "your ssid"
+        # PASS = "your pass"
 
-# import in wifi config from secrets.py
-#
-# format should follow
-#
-# SSID = "your ssid"
-# PASS = "your pass"
+        # disable powersave mode
+        #self.wlan.config(pm = 0xa11140)
 
-SSID = secrets.SSID
-PASS = secrets.PASS
+        self.SSID = secrets.SSID
+        self.PASS = secrets.PASS
 
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-# disable powersave mode
-#wlan.config(pm = 0xa11140)
+        self.connect()
 
-wlan.connect(SSID, PASS)
+        print('Connected successfully to %s!' % self.SSID)
+        print('IP Address: %s' % str(self.ip))
 
-# keep trying to connect FOREVER until there is a valid connection
-while not wlan.isconnected() and wlan.status() >= 0:
-    print('Waiting to connect to %s...' % SSID)
-    time.sleep(1)
 
-# print ip information
-print(wlan.ifconfig())
+    def connect(self):
+        self.wlan = network.WLAN(network.STA_IF)
+        self.wlan.active(True)
 
-# fun tidbits
-mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
-channel = wlan.config('channel')
-essid = wlan.config('essid')
-txpower = wlan.config('txpower')
+        self.wlan.connect(self.SSID, self.PASS)
 
-print(mac)
-print(channel)
-print(essid)
-print(txpower)
+        # keep trying to connect FOREVER until there is a valid connection
+        while not self.wlan.isconnected() and self.wlan.status() >= 0:
+            print('Attempting to connect to %s...' % self.SSID)
+            time.sleep(1)
 
-# disconnect
-# wlan.disconnect()
+        # ip information
+        self.ip = self.wlan.ifconfig()[0]
+        self.subnetmask = self.wlan.ifconfig()[1]
+        self.gateway = self.wlan.ifconfig()[2]
+        self.dns = self.wlan.ifconfig()[3]
+
+        # fun tidbits
+        self.mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+        self.channel = self.wlan.config('channel')
+        self.essid = self.wlan.config('essid')
+        self.txpower = self.wlan.config('txpower')
+
+    def disconnect(self):
+        self.wlan.disconnect()
+
+
+def main():
+    wifi = WIFI()
+
+
+if __name__ == '__main__':
+    main()
+    #try:
+    #    main()
+    #except Exception as e:
+    #    print(e)
