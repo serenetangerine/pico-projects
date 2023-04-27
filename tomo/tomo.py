@@ -5,7 +5,11 @@ from framebuf import FrameBuffer, MONO_HLSB
 from random import randint
 from time import sleep
 
-from battery import Battery
+try:
+    from battery import Battery
+    bat = Battery(1)
+except Exception as e:
+    print('could not find battery module, skipping...')
 
 
 
@@ -26,8 +30,8 @@ def debug():
 
 class Tomo:
     def __init__(self):
-        # default tick rate for basic movements and for battery reads if applicable
-        self.tick_rate = 0.5
+        # default tick rate for basic movements
+        self.tick_rate = 0.1
 
         # load sprites
         # TODO: figure out the matrix operation to mirror a matrix accross the vertical axis to avoid extra sprites
@@ -50,15 +54,14 @@ class Tomo:
 
         self.high_score = 0
         self.health = -1
-        # need to detect if there is a battery and only load this module if present
-        # to prevent having to edit code to get tomo to function properly
-        self.battery = Battery(self.tick_rate)
         self.spawn()
 
     def spawn(self):
         self.dir = 1
         self.food_spawned = False
         self.score = 0
+
+        # egg spawn animation
         for i in range(9):
             self.health = self.health + 1
             if i % 2 == 0:
@@ -66,16 +69,20 @@ class Tomo:
             else:
                 self.sprite = self.egg2
             self.render()
+        # flash forimminent hatching
         for i in range(7):
             if i % 2 == 0:
                 self.sprite = self.egg3
             else:
                 self.sprite = self.egg1
             self.render()
+        
+        # tomo is born!!
         self.sprite = self.tomoR
 
     def walk(self):
         # food motivation
+        # tomo will always move towards food if it exists
         if self.food_spawned:
             if self.food_x > self.x:
                 self.dir = 0
@@ -86,30 +93,38 @@ class Tomo:
                 if self.x - 17 <= self.food_x:
                     self.eat()
         else:
+            # if no food, choose a random direction
             self.dir = randint(0, 1)
         
         if self.dir == 0:
+            # make sure tomo doesn't get stuck trying to walk into a wall
+            # this way he will potentially dance back and forth at walls tho
             if self.x <= 96:
                 self.sprite = self.tomoL
                 self.x = self.x + 2
         else:
+            # same wall detection but for the other direction
             if self.x >= 0:
                 self.sprite = self.tomoR
                 self.x = self.x - 2
+        # give tomo the appearance of little hops
         if self.x % 3 == 0:
             self.y = 30
         else:
             self.y = 32 
+        
+        # check if tomo loses health, if food spawns, then render the tick
         self.roll_health(15)
         self.roll_food(12)
         self.render()
 
     def eat(self):
         self.food_spawned = False
-        self.score = self.score + 10
+        self.score = self.score + 1
         if self.health <= 6:
             self.health = self.health + 2
         else:
+            # cap at full health so tomo doesn't have the potential to be immortal
             self.health = 8
 
     def roll_health(self, max):
@@ -141,14 +156,23 @@ class Tomo:
 
     def render(self):
         oled.fill(0)
-        self.render_hearts()
+
+        # render tomo
         oled.blit(self.sprite, self.x, self.y)
+        
+        # render top row of the HUD
+        self.render_hearts()
         self.render_food()
+
+        # write score and highscore if it exists
         oled.text(str(self.score), 0, 3)
         if self.high_score > 0:
-            oled.text(str(self.high_score), 42, 3)
-        oled.text('%.2f' % float(self.battery.uptime / (60 * 60)), 0 , 18)
-        oled.text('%s%%' % str(int(self.battery.percentage)), 84, 18)
+            oled.text(str(self.high_score), 23, 3)
+        
+        # write second row of the HUD if there is a battery
+        if bat:
+            oled.text('%.2f' % float(bat.uptime / (60 * 60)), 0 , 18)
+            oled.text('%s%%' % str(int(bat.percentage)), 84, 18)
         
         oled.show()
         sleep(self.tick_rate)
