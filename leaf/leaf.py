@@ -5,34 +5,89 @@ from framebuf import FrameBuffer, MONO_HLSB
 from random import randint
 from time import sleep
 
+# required for uptime for tick counts for animations and such
+from battery import Battery
+bat = Battery(1)
 
 
-def load_sprite(file, size):
-    with open(file, 'rb') as f:
-        # skip over metadata
-        for i in range(3):
-            f.readline()
-        data = bytearray(f.read())
-        return FrameBuffer(data, size, size, MONO_HLSB)
+def debug():
+    import gc
+    gc.collect()
+    mem = 1 - (gc.mem_free() / 270336)
+    print(str(mem))
 
 
-def render(sprite):
-    oled.fill(0)
-    oled.blit(sprite, 0, 0)
-    oled.show()
+
+class Leaf:
+    def __init__(self):
+        # easy access parameters
+        self.tick_rate = 0.5
+
+        # initialize the display
+        self.width = 128
+        self.height = 64
+        self.i2c = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
+        self.oled = SSD1306_I2C(self.width, self.height, self.i2c)
+
+        # load sprites
+        self.plant1 = self.load_sprite('sprites/plant1.pbm', 32)
+        self.plant2 = self.load_sprite('sprites/plant2.pbm', 32)
+        
+        # set starting position and sprite
+        self.x = randint(0,96)
+        self.y = 32
+        self.sprite = self.plant1
+
+        # parameters for the animation loop
+        self.animation_stage = 0
+        self.animation_steps = 2
+
+        # start loop
+        self.loop()
+    
+    def tick(self):
+        # process all checks and rolls for tick changes 
+        # and process animation changes
+        self.animation_stage = (self.animation_stage + 1) % self.animation_steps
+        self.bounce()
+        self.render()
 
 
-# initialize the display
-width = 128
-height = 64
-i2c = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
-oled = SSD1306_I2C(width, height, i2c)
+    # backend methods for the game engine
+    def load_sprite(self, file, size):
+        with open(file, 'rb') as f:
+            # skip over metadata
+            for i in range(3):
+                f.readline()
+            data = bytearray(f.read())
+            return FrameBuffer(data, size, size, MONO_HLSB)
+    
+    # animations and drawing to screen
+    def bounce(self):
+        # check the uptime from the battery library to determine which
+        # sprite of the plant to use
+        if self.animation_stage % 2 == 0:
+            self.sprite = self.plant1
+        else:
+            self.sprite = self.plant2
+
+    def render(self):
+        # blank out the screen
+        self.oled.fill(0)
+        # render plant
+        self.oled.blit(self.sprite, self.x, self.y)
+        # draw screen
+        self.oled.show()
+    
+    def loop(self):
+        while True:
+            self.tick()
+            sleep(self.tick_rate)
+
 
 
 def main():
-    # load sprites into memory
-    leaf = load_sprite('leaf.pbm', 16)
-    render(leaf)
+    leaf = Leaf()
 
 
 
