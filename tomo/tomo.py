@@ -5,6 +5,8 @@ from framebuf import FrameBuffer, MONO_HLSB
 from random import randint
 from time import sleep
 
+from battery import Battery
+
 
 
 def load_sprite(file, size):
@@ -24,6 +26,8 @@ def debug():
 
 class Tomo:
     def __init__(self):
+        self.tick_rate = 3
+
         # load sprites
         self.tomoR = load_sprite('tomor.pbm', 32)
         self.tomoL = load_sprite('tomol.pbm', 32)
@@ -44,6 +48,8 @@ class Tomo:
 
         self.high_score = 0
         self.health = -1
+        self.battery = Battery(self.tick_rate)
+        self.battery.daemonize()
         self.spawn()
 
     def spawn(self):
@@ -137,7 +143,10 @@ class Tomo:
         self.render_food()
         oled.text(str(self.score), 0, 3)
         if self.high_score > 0:
-            oled.text(str(self.high_score), 0, 18)
+            oled.text(str(self.high_score), 42, 3)
+        oled.text('%.2f' % float(self.battery.uptime / (60 * 60)), 0 , 18)
+        oled.text('%s%%' % str(int(self.battery.percentage)), 84, 18)
+        
         oled.show()
         sleep(0.5)
 
@@ -162,9 +171,9 @@ while True:
         tomo.walk()
     else:
         tomo.sprite = tomo.dead
-        if tomo.score > tomo.high_score:
-            tomo.high_score = tomo.score
+        #if tomo.score > tomo.high_score:
+        #    tomo.high_score = tomo.score
         tomo.render()
-        sleep(3)
+        sleep(tomo.tick_rate)
         tomo.spawn()
         
