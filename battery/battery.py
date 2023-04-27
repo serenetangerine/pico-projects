@@ -1,20 +1,22 @@
 from machine import ADC, Pin
 import time
-
 import _thread
 
 
 class Battery:
     def __init__(self, tick_rate):
+        # this is hard coded for the built in pimoroni pico lipo battery support
+        # this pin may vary depending on your setup
         self.voltage_sensor = ADC(29)
 
+        # these are hard coded and may vary by battery 
         self.full_battery = 4.2
         self.empty_battery = 3.25
 
         self.uptime = 0
         self.tick_rate = tick_rate
-        
-        self.tick()
+        self.daemonize()
+
     
     def checkVoltage(self):
         conversion_factor = 3 * 3.3 / 65545
@@ -40,13 +42,11 @@ class Battery:
         self.thread = _thread.start_new_thread(self.daemon, ())
 
 
+
 def main():
     print('\n\ncall this module using the following syntax')
     print('\nfrom battery import Battery')
     print('\nbattery = Battery(tick_rate)')
-
-
-
 
 
 if __name__ == '__main__':
