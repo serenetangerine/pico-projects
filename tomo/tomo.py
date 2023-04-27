@@ -26,21 +26,23 @@ def debug():
 
 class Tomo:
     def __init__(self):
-        self.tick_rate = 3
+        # default tick rate for basic movements and for battery reads if applicable
+        self.tick_rate = 0.5
 
         # load sprites
-        self.tomoR = load_sprite('tomor.pbm', 32)
-        self.tomoL = load_sprite('tomol.pbm', 32)
+        # TODO: figure out the matrix operation to mirror a matrix accross the vertical axis to avoid extra sprites
+        self.tomoR = load_sprite('sprites/tomor.pbm', 32)
+        self.tomoL = load_sprite('sprites/tomol.pbm', 32)
         
-        self.heartFull = load_sprite('heart-full.pbm', 16)
-        self.heartHalf = load_sprite('heart-half.pbm', 16)
-        self.heartEmpty = load_sprite('heart-empty.pbm', 16)
+        self.heartFull = load_sprite('sprites/heart-full.pbm', 16)
+        self.heartHalf = load_sprite('sprites/heart-half.pbm', 16)
+        self.heartEmpty = load_sprite('sprites/heart-empty.pbm', 16)
 
-        self.dead = load_sprite('dead.pbm', 32)
+        self.dead = load_sprite('sprites/dead.pbm', 32)
 
-        self.egg1 = load_sprite('egg1.pbm', 32)
-        self.egg2 = load_sprite('egg2.pbm', 32)
-        self.egg3 = load_sprite('egg3.pbm', 32)
+        self.egg1 = load_sprite('sprites/egg1.pbm', 32)
+        self.egg2 = load_sprite('sprites/egg2.pbm', 32)
+        self.egg3 = load_sprite('sprites/egg3.pbm', 32)
         
         # set default position
         self.x = randint(0,96) 
@@ -48,8 +50,9 @@ class Tomo:
 
         self.high_score = 0
         self.health = -1
+        # need to detect if there is a battery and only load this module if present
+        # to prevent having to edit code to get tomo to function properly
         self.battery = Battery(self.tick_rate)
-        self.battery.daemonize()
         self.spawn()
 
     def spawn(self):
@@ -148,7 +151,7 @@ class Tomo:
         oled.text('%s%%' % str(int(self.battery.percentage)), 84, 18)
         
         oled.show()
-        sleep(0.5)
+        sleep(self.tick_rate)
 
 
 
@@ -166,14 +169,26 @@ oled = SSD1306_I2C(width, height, i2c)
 # initialize Tomo and start loop
 tomo = Tomo()
 while True:
-    #debug()
+    # TODO: have this logic check as part of the class for cleanliness
+    #
+    # will need to refactor some code to get the game down to a basic tick logic
+    # and just trigger the walk sequence and rendering to the screen at a tick level
+    #
+    # this would allow the class Tomo to be imported into other scripts directly and
+    # control a screen if not used by the other script (used for custom keyboards?)
+    #
+    # this would also allow for the potential to daemonize the game ticks to allow for
+    # easy button input loops for furture content updates
+
+    debug()
+
     if tomo.health > 0:
         tomo.walk()
     else:
         tomo.sprite = tomo.dead
-        #if tomo.score > tomo.high_score:
-        #    tomo.high_score = tomo.score
+        if tomo.score > tomo.high_score:
+            tomo.high_score = tomo.score
         tomo.render()
-        sleep(tomo.tick_rate)
+        sleep(tomo.tick_rate * 6)
         tomo.spawn()
         
