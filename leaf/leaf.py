@@ -74,8 +74,27 @@ class Leaf:
     def render(self):
         # blank out the screen
         self.oled.fill(0)
+
+        # draw HUD top 
+        if bat.uptime / 60 < 1:
+            time_display = float(bat.uptime)
+            time_unit = 'seconds'
+        elif bat.uptime / (60 * 60) < 1:
+            time_display = float(bat.uptime / 60)
+            time_unit = 'minutes'
+        elif bat.uptime / (60 * 60 * 24) < 1:
+            time_display = float(bat.uptime / (60 * 60))
+            time_unit = 'hours'
+        else: 
+            time_display = float(bat.uptime / (60 * 60 * 24))
+            time_unit = 'days'
+            
+        self.oled.text('%.2f %s' % (time_display, time_unit), 0, 3)
+        self.oled.text('%s%%' % str(bat.percentage), 84, 3)
+
         # render plant
         self.oled.blit(self.sprite, self.x, self.y)
+
         # draw screen
         self.oled.show()
     
