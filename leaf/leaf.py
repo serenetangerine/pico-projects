@@ -7,7 +7,7 @@ from time import sleep
 
 # required for uptime for tick counts for animations and such
 from battery import Battery
-bat = Battery(1)
+bat = Battery(0.5)
 
 
 def debug():
@@ -78,10 +78,10 @@ class Leaf:
         # draw HUD top 
         if bat.uptime / 60 < 1:
             time_display = float(bat.uptime)
-            time_unit = 'seconds'
+            time_unit = 'sec'
         elif bat.uptime / (60 * 60) < 1:
             time_display = float(bat.uptime / 60)
-            time_unit = 'minutes'
+            time_unit = 'min'
         elif bat.uptime / (60 * 60 * 24) < 1:
             time_display = float(bat.uptime / (60 * 60))
             time_unit = 'hours'
@@ -90,7 +90,7 @@ class Leaf:
             time_unit = 'days'
             
         self.oled.text('%.2f %s' % (time_display, time_unit), 0, 3)
-        self.oled.text('%s%%' % str(bat.percentage), 84, 3)
+        self.oled.text('%s%%' % str(int(bat.percentage)), 88, 3)
 
         # render plant
         self.oled.blit(self.sprite, self.x, self.y)
