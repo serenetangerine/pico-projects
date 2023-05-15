@@ -45,10 +45,12 @@ class Leaf:
         # start loop
         self.loop()
     
+
     def tick(self):
         # process all checks and rolls for tick changes 
         # and process animation changes
         self.animation_stage = (self.animation_stage + 1) % self.animation_steps
+        self.sun_status = bat.checkCharging()
         self.bounce()
         self.render()
 
@@ -62,6 +64,7 @@ class Leaf:
             data = bytearray(f.read())
             return FrameBuffer(data, size, size, MONO_HLSB)
     
+
     # animations and drawing to screen
     def bounce(self):
         # check the uptime from the battery library to determine which
@@ -71,11 +74,13 @@ class Leaf:
         else:
             self.sprite = self.plant2
 
+
     def render(self):
+        debug()
         # blank out the screen
         self.oled.fill(0)
 
-        # draw HUD top 
+        # render HUD top 
         if bat.uptime / 60 < 1:
             time_display = float(bat.uptime)
             time_unit = 'sec'
@@ -92,12 +97,20 @@ class Leaf:
         self.oled.text('%.2f %s' % (time_display, time_unit), 0, 3)
         self.oled.text('%s%%' % str(int(bat.percentage)), 88, 3)
 
+        # render sun in HUD
+        if self.sun_status:
+            sun_message = 'sun'
+        else:
+            sun_message = 'moon'
+        self.oled.text(sun_message, 0, 18) 
+
         # render plant
         self.oled.blit(self.sprite, self.x, self.y)
 
         # draw screen
         self.oled.show()
     
+
     def loop(self):
         while True:
             self.tick()
