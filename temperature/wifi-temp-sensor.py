@@ -41,7 +41,7 @@ class WebTemperature:
 
         self.json = """
         {
-            "temperature": "%s"
+            "temperature": %s
         }
         """
         
